@@ -45,6 +45,8 @@ public class NemashkaloSerializerTests
     [DataRow("[}")]
     [DataRow("qwerty")]
     [DataRow("[{\"Data\":\"qwerty\"}]")]
+    [DataRow("{\"Id\":0,\"Data\":\"qwerty0\"}{\"Id\":1,\"Data\":\"qwerty1\"}")]
+    [DataRow("{\"Id\":0,\"Data\":\"qwerty0\"},{\"Id\":1,\"Data\":\"qwerty1\"}")]
     [DataRow("[{\"Id\":0,\"Data\":\"qwerty0\"}{\"Id\":1,\"Data\":\"qwerty1\"}]")]
     [DataTestMethod]
     public async Task DeserializerTest__InvalidData__ReturnArgumentException(string invalidData)
@@ -56,6 +58,7 @@ public class NemashkaloSerializerTests
         }
     }
 
+    [DataRow("{\"Id\":0}")]
     [DataRow("[{\"Id\":0}]")]
     [DataRow("[{\"Id\":0,\"Data\":\"qwerty\"}]")]
     [DataRow("[{\"Id\":0,\"Data\":\"qwerty0\"},{\"Id\":1,\"Data\":\"qwerty1\"}]")]
