@@ -66,7 +66,7 @@ public class NemashkaloSerializer : IListSerializer
 
         try
         {
-            using (var reader = new StreamReader(s))
+            using (var reader = new StreamReader(s, leaveOpen: true))
             using (var jsonReader = new JsonTextReader(reader))
             {
                 var i = 0;
@@ -140,7 +140,7 @@ public class NemashkaloSerializer : IListSerializer
             i++;
         }
 
-        using (var writer = new StreamWriter(stream))
+        using (var writer = new StreamWriter(stream, leaveOpen: true))
         using (var jsonWriter = new JsonTextWriter(writer))
         {
             var ser = new JsonSerializer();
@@ -163,6 +163,7 @@ public class NemashkaloSerializer : IListSerializer
 
             await jsonWriter.WriteEndArrayAsync();
             await jsonWriter.FlushAsync();
+            stream.Position = 0;
         }
     }
 }
