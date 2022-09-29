@@ -109,7 +109,6 @@ public class NemashkaloSerializer : IListSerializer
 
                     i++;
                 }
-
                 if (i == 0) return null;
             }
         }
@@ -163,7 +162,6 @@ public class NemashkaloSerializer : IListSerializer
 
             await jsonWriter.WriteEndArrayAsync();
             await jsonWriter.FlushAsync();
-            stream.Position = 0;
         }
     }
 }

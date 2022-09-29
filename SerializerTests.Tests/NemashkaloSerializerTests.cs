@@ -168,6 +168,7 @@ public class NemashkaloSerializerTests
         using (var stream = new MemoryStream())
         {
             await ser.Serialize(oldHead, stream);
+            stream.Position = 0;
             return await ser.Deserialize(stream);
         }
     }
