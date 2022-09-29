@@ -13,13 +13,15 @@ namespace SerializerTests.Tests;
 [TestClass]
 public class NemashkaloSerializerTests
 {
+    private const int ListLength = 10000;
+    private const string BaseData = "qwerty";
     private IListSerializer ListSerializer => new NemashkaloSerializer();
 
     [TestMethod]
     public async Task NemashkaloSerializerTest__ReturnSuccess()
     {
         var rnd = new Random();
-        var head = CreateList(10000, (x) => $"qwerty{x}", (x) => rnd.Next(10000));
+        var head = CreateList(ListLength, (x) => BaseData + x , (x) => rnd.Next(10000));
         var ser = ListSerializer;
 
         var deepCopyHead = await ser.DeepCopy(head);
@@ -79,7 +81,7 @@ public class NemashkaloSerializerTests
     public async Task SerializerTest__DifferentData_WithRandom__ReturnSuccess()
     {
         Random rnd = new Random();
-        var head = CreateList(10000, (x) => $"qwerty{x}", (x) => rnd.Next(10000));
+        var head = CreateList(ListLength, (x) => BaseData + x, (x) => rnd.Next(10000));
 
         var newHead = await SerializerAndDeserialize(head);
 
@@ -89,7 +91,7 @@ public class NemashkaloSerializerTests
     [TestMethod]
     public async Task SerializerTest__DifferentData_WithoutRandom__ReturnSuccess()
     {
-        var head = CreateList(10000, (x) => $"qwerty{x}", (x) => null);
+        var head = CreateList(ListLength, (x) => BaseData + x , (x) => null);
 
         var newHead = await SerializerAndDeserialize(head);
 
@@ -99,7 +101,7 @@ public class NemashkaloSerializerTests
     [TestMethod]
     public async Task SerializerTest__EqualData_WithoutRandom__ReturnSuccess()
     {
-        var head = CreateList(10000, (x) => $"qwerty", (x) => null);
+        var head = CreateList(ListLength, (x) => BaseData, (x) => null);
 
         var newHead = await SerializerAndDeserialize(head);
 
@@ -109,7 +111,7 @@ public class NemashkaloSerializerTests
     [TestMethod]
     public async Task SerializerTest__NullData_WithoutRandom__ReturnSuccess()
     {
-        var head = CreateList(10000, (x) => null, (x) => null);
+        var head = CreateList(ListLength, (x) => null, (x) => null);
 
         var newHead = await SerializerAndDeserialize(head);
 
@@ -120,7 +122,7 @@ public class NemashkaloSerializerTests
     public async Task DeepCopyTest__DifferentData_WithRandom__ReturnSuccess()
     {
         var rnd = new Random();
-        var head = CreateList(10000, (x) => $"qwerty{x}", (x) => rnd.Next(10000));
+        var head = CreateList(ListLength, (x) => BaseData + x, (x) => rnd.Next(ListLength));
 
         var newHead = await ListSerializer.DeepCopy(head);
 
@@ -130,7 +132,7 @@ public class NemashkaloSerializerTests
     [TestMethod]
     public async Task DeepCopyTest__DifferentData_WithoutRandom__ReturnSuccess()
     {
-        var head = CreateList(10000, (x) => $"qwerty{x}", (x) => null);
+        var head = CreateList(ListLength, (x) => BaseData + x, (x) => null);
 
         var newHead = await ListSerializer.DeepCopy(head);
 
@@ -140,7 +142,7 @@ public class NemashkaloSerializerTests
     [TestMethod]
     public async Task DeepCopyTest__EqualData_WithoutRandom__ReturnSuccess()
     {
-        var head = CreateList(10000, (x) => $"qwerty", (x) => null);
+        var head = CreateList(ListLength, (x) => BaseData, (x) => null);
 
         var newHead = await ListSerializer.DeepCopy(head);
 
@@ -150,7 +152,7 @@ public class NemashkaloSerializerTests
     [TestMethod]
     public async Task DeepCopyTest__NullData_WithoutRandom__ReturnSuccess()
     {
-        var head = CreateList(10000, (x) => null, (x) => null);
+        var head = CreateList(ListLength, (x) => null, (x) => null);
 
         var newHead = await ListSerializer.DeepCopy(head);
 
