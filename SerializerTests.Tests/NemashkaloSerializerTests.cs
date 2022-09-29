@@ -13,12 +13,12 @@ namespace SerializerTests.Tests;
 [TestClass]
 public class NemashkaloSerializerTests
 {
-    private  IListSerializer ListSerializer => new NemashkaloSerializer();
+    private IListSerializer ListSerializer => new NemashkaloSerializer();
 
     [TestMethod]
     public async Task NemashkaloSerializerTest__ReturnSuccess()
     {
-        Random rnd = new Random();
+        var rnd = new Random();
         var head = CreateList(10000, (x) => $"qwerty{x}", (x) => rnd.Next(10000));
         var ser = ListSerializer;
 
@@ -119,7 +119,7 @@ public class NemashkaloSerializerTests
     [TestMethod]
     public async Task DeepCopyTest__DifferentData_WithRandom__ReturnSuccess()
     {
-        Random rnd = new Random();
+        var rnd = new Random();
         var head = CreateList(10000, (x) => $"qwerty{x}", (x) => rnd.Next(10000));
 
         var newHead = await ListSerializer.DeepCopy(head);

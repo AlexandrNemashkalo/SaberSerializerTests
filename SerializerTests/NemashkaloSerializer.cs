@@ -2,24 +2,11 @@
 using Newtonsoft.Json.Linq;
 using SerializerTests.Interfaces;
 using SerializerTests.Nodes;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SerializerTests.Implementations;
 
 public class NemashkaloSerializer : IListSerializer
 {
-    class ListNodeComparer : IEqualityComparer<ListNode>
-    {
-        public bool Equals(ListNode? x, ListNode? y) => ReferenceEquals(x, y);
-
-        public int GetHashCode([DisallowNull] ListNode obj)
-            => HashCode.Combine(
-                obj.Data == null ? 0 : obj.Data.GetHashCode(),
-                obj.Random?.Data == null ? 0 : obj.Random?.Data.GetHashCode(),
-                obj.Previous?.Data == null ? 0 : obj.Previous.Data.GetHashCode(),
-                obj.Next?.Data == null ? 0 : obj.Next.Data.GetHashCode());
-    }
-
     class ListNodeShort
     {
         public int Id { get; set; }
@@ -27,12 +14,10 @@ public class NemashkaloSerializer : IListSerializer
         public string? Data { get; set; }
     }
 
-    private readonly IEqualityComparer<ListNode> _listNodeComparer = new ListNodeComparer();
-
     public Task<ListNode> DeepCopy(ListNode head)
     {
-        var nodeDict = new Dictionary<ListNode, ListNode>(_listNodeComparer);
-        var randomNodeDict = new Dictionary<ListNode, ListNode>(_listNodeComparer);
+        var nodeDict = new Dictionary<ListNode, ListNode>();
+        var randomNodeDict = new Dictionary<ListNode, ListNode>();
 
         var currentNode = head;
         while (currentNode != null)
@@ -144,7 +129,7 @@ public class NemashkaloSerializer : IListSerializer
     public async Task Serialize(ListNode node, Stream stream)
     {
         if (stream == null || !stream.CanWrite) throw new ArgumentException("Invalid stream for serialization to ListNode");
-        var nodeDict = new Dictionary<ListNode, int>(_listNodeComparer);
+        var nodeDict = new Dictionary<ListNode, int>();
 
         var i = 0;
         var currentNode = node;
