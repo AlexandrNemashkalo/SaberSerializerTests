@@ -13,7 +13,7 @@ namespace SerializerTests.Tests;
 [TestClass]
 public class NemashkaloSerializerTests
 {
-    private const int ListLength = 10000;
+    private const int ListLength = 100000;
     private const string BaseData = "qwerty";
     private IListSerializer ListSerializer => new NemashkaloSerializer();
 
@@ -21,11 +21,11 @@ public class NemashkaloSerializerTests
     public async Task NemashkaloSerializerTest__ReturnSuccess()
     {
         var rnd = new Random();
-        var head = CreateList(ListLength, x => BaseData + x , x => rnd.Next(10000));
+        var head = CreateList(ListLength, x => BaseData + x , x => rnd.Next(ListLength));
         var ser = ListSerializer;
 
         var deepCopyHead = await ser.DeepCopy(head);
-        var serHead = await SerializerAndDeserialize(head, ser);
+        var serHead = await SerializeAndDeserialize(head, ser);
 
         AsserAreDataEqual(deepCopyHead, serHead);
     }
@@ -73,10 +73,20 @@ public class NemashkaloSerializerTests
         }
     }
 
+    [DataRow("[{\"Id\":0,\"RandomId\":null,\"Data\":\"qwerty\"}]")]
+    [DataTestMethod]
+    public async Task DeserializerAndSerialize__CorrectData__ReturnSuccess(string correctData)
+    {
+        var bytes = Encoding.ASCII.GetBytes(correctData);
+        var newBytes = await DeserializeAndSerialize(bytes);
+        var newStr = Encoding.Default.GetString(newBytes);
+        Assert.AreEqual(correctData, newStr.TrimEnd('\0'));
+    }
+
     [TestMethod]
     public async Task SerializerTest__NullNode__ReturnNullSuccess()
     {
-        var newHead = await SerializerAndDeserialize(null);
+        var newHead = await SerializeAndDeserialize(null);
         Assert.IsNull(newHead);
     }
 
@@ -84,9 +94,9 @@ public class NemashkaloSerializerTests
     public async Task SerializerTest__DifferentData_WithRandom__ReturnSuccess()
     {
         Random rnd = new Random();
-        var head = CreateList(ListLength, x => BaseData + x, x => rnd.Next(10000));
+        var head = CreateList(ListLength, x => BaseData + x, x => rnd.Next(ListLength));
 
-        var newHead = await SerializerAndDeserialize(head);
+        var newHead = await SerializeAndDeserialize(head);
 
         AsserAreDataEqual(head, newHead);
     }
@@ -96,7 +106,7 @@ public class NemashkaloSerializerTests
     {
         var head = CreateList(ListLength, x => BaseData + x , x => null);
 
-        var newHead = await SerializerAndDeserialize(head);
+        var newHead = await SerializeAndDeserialize(head);
 
         AsserAreDataEqual(head, newHead);
     }
@@ -106,7 +116,7 @@ public class NemashkaloSerializerTests
     {
         var head = CreateList(ListLength, x => BaseData, x => null);
 
-        var newHead = await SerializerAndDeserialize(head);
+        var newHead = await SerializeAndDeserialize(head);
 
         AsserAreDataEqual(head, newHead);
     }
@@ -116,7 +126,7 @@ public class NemashkaloSerializerTests
     {
         var head = CreateList(ListLength, x => null, x => null);
 
-        var newHead = await SerializerAndDeserialize(head);
+        var newHead = await SerializeAndDeserialize(head);
 
         AsserAreDataEqual(head, newHead);
     }
@@ -162,7 +172,21 @@ public class NemashkaloSerializerTests
         AsserAreDataEqual(head, newHead);
     }
 
-    private async Task<ListNode> SerializerAndDeserialize(ListNode oldHead, IListSerializer ser = null)
+    private async Task<byte[]> DeserializeAndSerialize(byte[] data, IListSerializer ser = null)
+    {
+        ser ??= ListSerializer;
+        using (var stream = new MemoryStream())
+        {
+            stream.Write(data, 0, data.Length);
+            stream.Position = 0;
+            var node = await ser.Deserialize(stream);
+            stream.Position = 0;
+            await ser.Serialize(node, stream);
+            return stream.GetBuffer();
+        }
+    }
+
+    private async Task<ListNode> SerializeAndDeserialize(ListNode oldHead, IListSerializer ser = null)
     {
         ser ??= ListSerializer;
         using (var stream = new MemoryStream())
